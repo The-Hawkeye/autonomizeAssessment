@@ -47,15 +47,14 @@ exports.getUserByUsername = async(req,res)=>{
 
     let data = await User.findOne({login:username});
 
-    // if(data)
-    // {
-    //     if(data.isDeleted)
-    //     res.json({message:"Data is deleted"})
-    // }
-
-    console.log(data,"data from DB")
-
-    if(!data)
+    if(data)
+    {
+        if(data.isDeleted)
+        res.json({message:"Data is deleted"})
+        else
+        res.status(200).json(data);
+    }
+    else
     {
         const ans  = await axios.get(`https://api.github.com/users/${username}`)
 
@@ -67,41 +66,12 @@ exports.getUserByUsername = async(req,res)=>{
 
         data = await User.create({...ans.data, isDeleted:false,friends:friends});
 
-        // res.status(200).json(data.data);
+        res.status(200).json(data);
 
     }
-
-    // const {followers_url, following_url} = data;
-    // console.log(followers_url,following_url,"URLS");
-
-    // const updatedFollowingUrl = following_url.split("{")[0];
-    // console.log(updatedFollowingUrl,"updated url")
-
-    // const followers = await axios.get(followers_url);
-    // const following = await axios.get(updatedFollowingUrl);
-
-
-    // console.log(followers.data,following.data,"BOth Data");
-
-    // const followersLogins = followers.data.map(follower => follower.login);
-    // const followingLogins = following.data.map(follow => follow.login);
-
-    // console.log(followersLogins,"fls");
-    // console.log(followingLogins,"ffls");
-
-    // // const commonLogins = await User.find({ login: { $in: [...followersLogins, ...followingLogins] } });
-
-    // const finalData = followersLogins.filter(el=> followingLogins.includes(el));
-    // console.log(finalData,"Final Data");
-
-
-    // const commonLogins = await User.find({ login: { $in: [...followers.data, ...following.data] } });
-
-    // console.log(commonLogins,"sdjkhfakjsdf");
-
-
-
-        res.status(200).json(data);
+    
+    // else
+    //     res.status(200).json(data);
 
 
    
@@ -169,16 +139,26 @@ exports.updateData = async(req,res)=>{
         const {username} = req.params;
         console.log(username);
         console.log(req.body)
-        let ans  = await User.find({login:username});
-        console.log(ans);
+        let ans  = await User.findOne({login:username});//find will return An array not an object so use findOne only
+        console.log(ans,"ans");
+        console.log(ans.isDeleted,"is del");
+
+        if(ans.isDeleted)
+        {
+            console.log("it is deleted")
+            res.json({message:"Data is already deleted"})
+        }
+        else{
         const data  = await User.findOneAndUpdate({login:username},req.body,{new:true});
-        console.log(data,"data")
+        // console.log(data,"data")
         if(!data)
         {
             res.json({message:"Failed updataing the data"});
         }else
             res.json({Message:"Data updated successfully",UpdatedData:data})
         // console.log(first)
+
+        }
 
     }catch(e){
         res.send("Error in updating user details "+e);
@@ -188,17 +168,17 @@ exports.updateData = async(req,res)=>{
 exports.sortData = async(req,res)=>{
 
 
-    const queryObj = req.query;
+    const queryObj = req.query.sort;
     console.log(queryObj);
 
-    let queryStr = JSON.stringify(queryObj)
-    queryStr = queryStr.split(",").join(" ");
+    // let queryStr = JSON.stringify(queryObj)
+    queryStr = queryObj.split(",").join(" ");
 
-    const data  = await User.find({isDeleted:false}).sort();
+    const data  = await User.find({isDeleted:false}).sort(queryStr)
 
-    console.log(data,"sorted data");
+    // console.log(data,"sorted data");
 
-    res.json(data);
+    res.json({message:"Sorted",sortedData:data});
 
 
 
