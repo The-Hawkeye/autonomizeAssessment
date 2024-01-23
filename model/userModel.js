@@ -41,7 +41,8 @@ const userSchema = new mongoose.Schema({
   isDeleted:{
     type : Boolean ,
     default:false
-  }
+  },
+  friends:[String]
 });
 
 // Create the Mongoose model

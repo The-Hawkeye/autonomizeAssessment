@@ -5,6 +5,40 @@ const User = require("../model/userModel")
 
 
 
+const getFriends = async(followers_url, following_url)=>{
+
+
+
+    // const {followers_url, following_url}
+    console.log(followers_url,following_url,"URLS");
+
+    const updatedFollowingUrl = following_url.split("{")[0];
+    console.log(updatedFollowingUrl,"updated url")
+
+    const followers = await axios.get(followers_url);
+    const following = await axios.get(updatedFollowingUrl);
+
+
+    console.log(followers.data,following.data,"BOth Data");
+
+    const followersLogins = followers.data.map(follower => follower.login);
+    const followingLogins = following.data.map(follow => follow.login);
+
+    console.log(followersLogins,"fls");
+    console.log(followingLogins,"ffls");
+
+    // const commonLogins = await User.find({ login: { $in: [...followersLogins, ...followingLogins] } });
+
+    const finalData = followersLogins.filter(el=> followingLogins.includes(el));
+    console.log(finalData,"Final Data");
+
+    return finalData;
+
+}
+
+
+
+
 
 exports.getUserByUsername = async(req,res)=>{
     const {username} = req.params;
@@ -27,28 +61,43 @@ exports.getUserByUsername = async(req,res)=>{
 
         console.log(ans.data,"data from api")
 
-        data = await User.create({...ans.data, isDeleted:false});
+        const {followers_url, following_url} = ans.data;
+
+        friends = await getFriends(followers_url,following_url);
+
+        data = await User.create({...ans.data, isDeleted:false,friends:friends});
 
         // res.status(200).json(data.data);
 
     }
 
-    const {followers_url, following_url} = data;
-    console.log(followers_url,following_url,"URLS");
+    // const {followers_url, following_url} = data;
+    // console.log(followers_url,following_url,"URLS");
 
-    const updatedFollowingUrl = following_url.split("{")[0];
-    console.log(updatedFollowingUrl,"updated url")
+    // const updatedFollowingUrl = following_url.split("{")[0];
+    // console.log(updatedFollowingUrl,"updated url")
 
-    const followers = await axios.get(followers_url);
-    const following = await axios.get(updatedFollowingUrl);
-
-
-    console.log(followers.data,following.data,"BOth Data");
+    // const followers = await axios.get(followers_url);
+    // const following = await axios.get(updatedFollowingUrl);
 
 
-    const commonLogins = await User.find({ login: { $in: [...followers.data, ...following.data] } });
+    // console.log(followers.data,following.data,"BOth Data");
 
-    console.log(commonLogins,"sdjkhfakjsdf");
+    // const followersLogins = followers.data.map(follower => follower.login);
+    // const followingLogins = following.data.map(follow => follow.login);
+
+    // console.log(followersLogins,"fls");
+    // console.log(followingLogins,"ffls");
+
+    // // const commonLogins = await User.find({ login: { $in: [...followersLogins, ...followingLogins] } });
+
+    // const finalData = followersLogins.filter(el=> followingLogins.includes(el));
+    // console.log(finalData,"Final Data");
+
+
+    // const commonLogins = await User.find({ login: { $in: [...followers.data, ...following.data] } });
+
+    // console.log(commonLogins,"sdjkhfakjsdf");
 
 
 
