@@ -10,27 +10,27 @@ const getFriends = async(followers_url, following_url)=>{
 
 
     // const {followers_url, following_url}
-    console.log(followers_url,following_url,"URLS");
+    // console.log(followers_url,following_url,"URLS")
 
     const updatedFollowingUrl = following_url.split("{")[0];
-    console.log(updatedFollowingUrl,"updated url")
+    // console.log(updatedFollowingUrl,"updated url")
 
     const followers = await axios.get(followers_url);
     const following = await axios.get(updatedFollowingUrl);
 
 
-    console.log(followers.data,following.data,"BOth Data");
+    // console.log(followers.data,following.data,"BOth Data");
 
     const followersLogins = followers.data.map(follower => follower.login);
     const followingLogins = following.data.map(follow => follow.login);
 
-    console.log(followersLogins,"fls");
-    console.log(followingLogins,"ffls");
+    // console.log(followersLogins,"fls");
+    // console.log(followingLogins,"ffls");
 
     // const commonLogins = await User.find({ login: { $in: [...followersLogins, ...followingLogins] } });
 
     const finalData = followersLogins.filter(el=> followingLogins.includes(el));
-    console.log(finalData,"Final Data");
+    // console.log(finalData,"Final Data");
 
     return finalData;
 
@@ -43,7 +43,7 @@ const getFriends = async(followers_url, following_url)=>{
 exports.getUserByUsername = async(req,res)=>{
     const {username} = req.params;
 
-    console.log(username)
+    // console.log(username)
 
     let data = await User.findOne({login:username});
 
@@ -58,7 +58,7 @@ exports.getUserByUsername = async(req,res)=>{
     {
         const ans  = await axios.get(`https://api.github.com/users/${username}`)
 
-        console.log(ans.data,"data from api")
+        // console.log(ans.data,"data from api")
 
         const {followers_url, following_url} = ans.data;
 
@@ -89,7 +89,7 @@ exports.searchByUsernameAndLocation = async(req,res)=>{
 
         const {username, location} = req.query;
 
-        console.log(username,location ,"sdhjfklasf")
+        // console.log(username,location ,"sdhjfklasf")
 
         const data  = await User.find({ location: { $regex: new RegExp(location, 'i') },});
 
@@ -99,7 +99,7 @@ exports.searchByUsernameAndLocation = async(req,res)=>{
         }
         else
         {
-            console.log(data,"data from mongo")
+            // console.log(data,"data from mongo")
             res.json(data)
         }
 
@@ -114,12 +114,12 @@ exports.searchByUsernameAndLocation = async(req,res)=>{
 exports.softDelete = async(req,res)=>{
     try{
     const {username} = req.params;
-    console.log(username)
+    // console.log(username)
 
     const data  = await User.findOneAndUpdate({login:username},{isDeleted:true},{new:true});
 
 
-    console.log(data);
+    // console.log(data);
 
     res.json({status:"Success",message:"Document deleted succesfully"})
 
@@ -137,15 +137,15 @@ exports.updateData = async(req,res)=>{
     try{
 
         const {username} = req.params;
-        console.log(username);
+        // console.log(username);
         console.log(req.body)
         let ans  = await User.findOne({login:username});//find will return An array not an object so use findOne only
-        console.log(ans,"ans");
+        // console.log(ans,"ans");
         console.log(ans.isDeleted,"is del");
 
         if(ans.isDeleted)
         {
-            console.log("it is deleted")
+            // console.log("it is deleted")
             res.json({message:"Data is already deleted"})
         }
         else{
@@ -169,7 +169,7 @@ exports.sortData = async(req,res)=>{
 
 
     const queryObj = req.query.sort;
-    console.log(queryObj);
+    // console.log(queryObj);
 
     // let queryStr = JSON.stringify(queryObj)
     queryStr = queryObj.split(",").join(" ");
