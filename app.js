@@ -8,8 +8,9 @@ app.use(express.json());
 
 app.use("/users", routes);
 
-// app.use((req, res, next) => {
-//     next(new ApiError(httpStatus.NOT_FOUND, "Not found"));
-// });
+app.use((req, res) => {
+
+    res.status(404).json({message:"Not Found or incorrect endpoint"})
+});
 
 module.exports = app
