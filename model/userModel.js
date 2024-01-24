@@ -7,7 +7,11 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique:true
   },
-  id: Number,
+  id: {
+    type:Number,
+    required:true,
+    unique:true
+  },
   node_id: String,
   avatar_url: String,
   gravatar_id: String,
@@ -28,7 +32,11 @@ const userSchema = new mongoose.Schema({
   company: String,
   blog: String,
   location: String,
-  email: String,
+  email:{
+    type : String,
+    required:true,
+    unique:true
+  },
   hireable: Boolean,
   bio: String,
   twitter_username: String,
